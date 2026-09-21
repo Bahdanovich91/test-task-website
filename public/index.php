@@ -4,7 +4,14 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Core\View\SmartyView;
+use App\Controllers\HomeController;
+use App\Core\Routing\Router;
 
-$view = new SmartyView();
-$view->display('home.tpl');
+$router = new Router();
+
+$router->register(HomeController::class);
+
+$router->dispatch(
+    $_SERVER['REQUEST_METHOD'],
+    $_SERVER['REQUEST_URI']
+);
