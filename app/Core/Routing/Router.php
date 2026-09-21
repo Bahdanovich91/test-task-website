@@ -6,6 +6,7 @@ namespace App\Core\Routing;
 
 use App\Core\Container\Container;
 use ReflectionClass;
+use ReflectionException;
 
 final class Router
 {
@@ -39,15 +40,31 @@ final class Router
         $path = parse_url($uri, PHP_URL_PATH);
 
         foreach ($this->routes as $route) {
-            if (
-                !in_array($method, $route['methods'], true)
-                || $path !== $route['path']
-            ) {
+            if (!in_array($method, $route['methods'], true)) {
+                continue;
+            }
+
+            $pattern = preg_replace(
+                '#\{([^}]+)\}#',
+                '([^/]+)',
+                $route['path']
+            );
+
+            if (!preg_match('#^' . $pattern . '$#', $path, $matches)) {
                 continue;
             }
 
             $controller = $this->container->get($route['controller']);
-            $controller->{$route['action']}();
+
+            array_shift($matches);
+
+            $matches = array_map(
+                static fn(string $value): int|string =>
+                ctype_digit($value) ? (int) $value : $value,
+                $matches
+            );
+
+            $controller->{$route['action']}(...$matches);
 
             return;
         }

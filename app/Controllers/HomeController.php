@@ -22,6 +22,7 @@ readonly class HomeController
         $categories = $this->homeService->getCategoriesWithPosts();
 
         $this->view->assign('categories', $categories);
+        $this->view->assign('title', 'Site');
         $this->view->display('home.tpl');
     }
 }

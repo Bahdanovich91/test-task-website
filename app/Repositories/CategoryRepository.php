@@ -12,4 +12,9 @@ class CategoryRepository
     {
         return Category::all();
     }
+
+    public function find(int $id): ?Category
+    {
+        return Category::find($id);
+    }
 }
