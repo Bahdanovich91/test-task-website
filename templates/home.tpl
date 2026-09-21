@@ -8,6 +8,13 @@
     <title>Test task</title>
 </head>
 <body>
-    <p>Test</p>
+    <h1>Test</h1>
+
+    {foreach $categories as $category}
+        <section>
+            <h2>{$category->name}</h2>
+            <p>{$category->description}</p>
+        </section>
+    {/foreach}
 </body>
 </html>

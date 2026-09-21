@@ -6,20 +6,21 @@ namespace App\Controllers;
 
 use App\Core\Routing\Route;
 use App\Core\View\SmartyView;
+use App\Models\Category;
 
 final class HomeController
 {
+    public function __construct(
+        private readonly SmartyView $view
+    ) {
+    }
+
     #[Route('/')]
     public function index(): void
     {
-        $view = new SmartyView();
+        $categories = Category::all();
 
-        $view->display('home.tpl');
-    }
-
-    #[Route('/test', ['POST'])]
-    public function test(): void
-    {
-        var_dump($_POST);
+        $this->view->assign('categories', $categories);
+        $this->view->display('home.tpl');
     }
 }

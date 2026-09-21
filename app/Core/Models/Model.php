@@ -44,4 +44,9 @@ abstract class Model
             $rows
         );
     }
+
+    public function __get(string $name): mixed
+    {
+        return $this->attributes[$name] ?? null;
+    }
 }

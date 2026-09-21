@@ -5,9 +5,11 @@ declare(strict_types=1);
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\HomeController;
+use App\Core\Container\Container;
 use App\Core\Routing\Router;
 
-$router = new Router();
+$container = new Container();
+$router = new Router($container);
 
 $router->register(HomeController::class);
 

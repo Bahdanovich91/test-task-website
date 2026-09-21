@@ -4,11 +4,17 @@ declare(strict_types=1);
 
 namespace App\Core\Routing;
 
+use App\Core\Container\Container;
 use ReflectionClass;
 
 final class Router
 {
     private array $routes = [];
+
+    public function __construct(
+        private readonly Container $container
+    ) {
+    }
 
     public function register(string $controllerClass): void
     {
@@ -40,7 +46,7 @@ final class Router
                 continue;
             }
 
-            $controller = new $route['controller']();
+            $controller = $this->container->get($route['controller']);
             $controller->{$route['action']}();
 
             return;
