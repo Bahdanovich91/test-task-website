@@ -10,10 +10,24 @@
 <body>
     <h1>Test</h1>
 
-    {foreach $categories as $category}
+    {foreach $categories as $item}
         <section>
-            <h2>{$category->name}</h2>
-            <p>{$category->description}</p>
+            <h2>{$item['category']->name}</h2>
+            <p>{$item['category']->description}</p>
+
+            {if $item['posts']}
+                <div>
+                    {foreach $item['posts'] as $post}
+                        <article>
+                            <h3>{$post.title}</h3>
+                            <p>{$post.description}</p>
+                            <span>Views: {$post.views_count}</span>
+                        </article>
+                    {/foreach}
+                </div>
+            {else}
+                <p></p>
+            {/if}
         </section>
     {/foreach}
 </body>

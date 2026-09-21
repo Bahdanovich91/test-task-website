@@ -6,19 +6,20 @@ namespace App\Controllers;
 
 use App\Core\Routing\Route;
 use App\Core\View\SmartyView;
-use App\Models\Category;
+use App\Services\HomeService;
 
-final class HomeController
+readonly class HomeController
 {
     public function __construct(
-        private readonly SmartyView $view
+        private SmartyView  $view,
+        private HomeService $homeService
     ) {
     }
 
     #[Route('/')]
     public function index(): void
     {
-        $categories = Category::all();
+        $categories = $this->homeService->getCategoriesWithPosts();
 
         $this->view->assign('categories', $categories);
         $this->view->display('home.tpl');
