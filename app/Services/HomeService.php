@@ -18,7 +18,6 @@ readonly class HomeService
     public function getCategoriesWithPosts(): array
     {
         $result = [];
-
         foreach ($this->categoryRepository->getAll() as $category) {
             $result[] = [
                 'category' => $category,

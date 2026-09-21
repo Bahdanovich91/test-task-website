@@ -6,6 +6,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Controllers\CategoryController;
 use App\Controllers\HomeController;
+use App\Controllers\PostController;
 use App\Core\Container\Container;
 use App\Core\Routing\Router;
 
@@ -14,6 +15,7 @@ $router = new Router($container);
 
 $router->register(HomeController::class);
 $router->register(CategoryController::class);
+$router->register(PostController::class);
 
 $router->dispatch(
     $_SERVER['REQUEST_METHOD'],

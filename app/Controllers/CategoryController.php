@@ -30,7 +30,7 @@ readonly class CategoryController
             $page
         );
 
-        if ($data === null) {
+        if (!$data) {
             http_response_code(404);
             echo 'Category not found';
             return;

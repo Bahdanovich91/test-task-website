@@ -22,8 +22,7 @@ readonly class CategoryService
         int $page
     ): ?array {
         $category = $this->categoryRepository->find($id);
-
-        if ($category === null) {
+        if (!$category) {
             return null;
         }
 

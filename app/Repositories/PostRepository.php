@@ -80,4 +80,53 @@ class PostRepository
 
         return (int)$stmt->fetchColumn();
     }
+
+    public function find(int $id): ?array
+    {
+        $stmt = Database::getConnection()->prepare(
+            'SELECT *
+         FROM posts
+         WHERE id = ?
+         LIMIT 1'
+        );
+
+        $stmt->execute([$id]);
+
+        $post = $stmt->fetch();
+
+        return $post ?: null;
+    }
+
+    public function findSimilar(int $postId): array
+    {
+        $stmt = Database::getConnection()->prepare(
+            'SELECT DISTINCT posts.*
+         FROM posts
+         INNER JOIN post_category
+             ON post_category.post_id = posts.id
+         WHERE post_category.category_id IN (
+             SELECT category_id
+             FROM post_category
+             WHERE post_id = ?
+         )
+         AND posts.id != ?
+         ORDER BY posts.created_at DESC
+         LIMIT 3'
+        );
+
+        $stmt->execute([$postId, $postId]);
+
+        return $stmt->fetchAll();
+    }
+
+    public function incrementViews(int $id): void
+    {
+        $stmt = Database::getConnection()->prepare(
+            'UPDATE posts
+         SET views_count = views_count + 1
+         WHERE id = ?'
+        );
+
+        $stmt->execute([$id]);
+    }
 }
