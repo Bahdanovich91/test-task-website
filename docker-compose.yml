@@ -27,6 +27,7 @@ services:
       - "${DB_EXTERNAL_PORT}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./database/migrations/create_tables.sql:/docker-entrypoint-initdb.d/001_create_blog_tables.sql:ro
 
 volumes:
   mysql_data:
