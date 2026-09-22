@@ -32,7 +32,7 @@ class CategoryRepository
         $rows = $stmt->fetchAll();
 
         return array_map(
-            fn(array $row): Category => new Category($row),
+            fn (array $row): Category => new Category($row),
             $rows
         );
     }

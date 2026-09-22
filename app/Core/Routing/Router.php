@@ -6,7 +6,6 @@ namespace App\Core\Routing;
 
 use App\Core\Container\Container;
 use ReflectionClass;
-use ReflectionException;
 
 final class Router
 {
@@ -59,7 +58,7 @@ final class Router
             array_shift($matches);
 
             $matches = array_map(
-                static fn(string $value): int|string =>
+                static fn (string $value): int|string =>
                 ctype_digit($value) ? (int) $value : $value,
                 $matches
             );

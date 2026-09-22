@@ -40,7 +40,7 @@ abstract class Model
             ->fetchAll();
 
         return array_map(
-            fn(array $row): static => new static($row),
+            fn (array $row): static => new static($row),
             $rows
         );
     }

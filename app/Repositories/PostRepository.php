@@ -31,8 +31,7 @@ class PostRepository
         string $direction = 'DESC',
         int    $page = 1,
         int    $perPage = 5
-    ): array
-    {
+    ): array {
         $orderBy = $sort === 'views'
             ? 'views_count'
             : 'created_at';
