@@ -1,6 +1,35 @@
-1) cp .env.example .env
-2) docker compose up -d --build
-3) docker compose exec php php database/seed.php
+## Run
 
-Запуск phpstan
-```docker compose exec php vendor/bin/phpstan analyse```
+```bash
+cp .env.example .env
+docker compose up -d --build
+docker compose exec php php database/seed.php
+```
+
+Application: http://localhost:8080
+
+## Checks
+
+PHPStan:
+
+```bash
+docker compose exec php vendor/bin/phpstan analyse
+```
+
+PHP-CS-Fixer check:
+
+```bash
+docker compose exec php vendor/bin/php-cs-fixer fix --dry-run --diff
+```
+
+PHP-CS-Fixer fix:
+
+```bash
+docker compose exec php vendor/bin/php-cs-fixer fix
+```
+
+Compile SCSS:
+
+```bash
+docker compose exec php php bin/compile-scss.php
+```
