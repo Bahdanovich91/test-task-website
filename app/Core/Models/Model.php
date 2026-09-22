@@ -11,7 +11,7 @@ abstract class Model
 {
     protected static string $table;
 
-    public function __construct(
+    final public function __construct(
         protected array $attributes = []
     ) {
     }

@@ -1,7 +1,8 @@
 {
   "require": {
     "php": "^8.5",
-    "smarty/smarty": "^5.0"
+    "smarty/smarty": "^5.0",
+    "ext-pdo": "*"
   },
   "autoload": {
     "psr-4": {
@@ -9,6 +10,10 @@
     }
   },
   "require-dev": {
-    "fakerphp/faker": "^1.24"
+    "fakerphp/faker": "^1.24",
+    "phpstan/phpstan": "^2.2"
+  },
+  "scripts": {
+    "phpstan": "phpstan analyse"
   }
 }
