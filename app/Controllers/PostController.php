@@ -16,6 +16,23 @@ readonly class PostController
     ) {
     }
 
+    #[Route('/posts')]
+    public function index(): void
+    {
+        $sort = $_GET['sort'] ?? 'date';
+        $direction = $_GET['direction'] ?? 'DESC';
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+
+        $data = $this->postService->getPostsPageData(
+            $sort,
+            $direction,
+            $page
+        );
+
+        $this->view->assign('data', $data);
+        $this->view->display('posts.tpl');
+    }
+
     #[Route('/post/{id}')]
     public function show(int $id): void
     {

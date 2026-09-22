@@ -29,4 +29,16 @@ readonly class PostService
             'similarPosts' => $this->postRepository->findSimilar($id),
         ];
     }
+
+    public function getPostsPageData(
+        string $sort,
+        string $direction,
+        int $page
+    ): array {
+        return $this->postRepository->getPaginated(
+            $sort,
+            $direction,
+            $page
+        );
+    }
 }

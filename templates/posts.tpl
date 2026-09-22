@@ -5,8 +5,6 @@
     <h1>All articles</h1>
 
     <p>
-        Sort:
-
         <a href="/posts?sort=date&direction=DESC">
             By date
         </a>
@@ -16,31 +14,31 @@
         </a>
     </p>
 
-    <section>
-        <h2>Similar articles</h2>
+    {if $data['posts']}
+        {foreach $data['posts'] as $post}
+            <article>
+                <h2>
+                    <a href="/post/{$post.id}">
+                        {$post.title}
+                    </a>
+                </h2>
 
-        {if $data['similarPosts']}
-            {foreach $data['similarPosts'] as $post}
-                <article>
-                    <h3>
-                        <a href="/post/{$post.id}">
-                            {$post.title}
-                        </a>
-                    </h3>
+                <p>
+                    {$post.description}
+                </p>
 
-                    <p>{$post.description}</p>
+                <p>
+                    Published: {$post.created_at}
+                </p>
 
-                    <span>
-                        Published: {$post.created_at}
-                    </span>
-
-                    <span>Views: {$post.views_count}</span>
-                </article>
-            {/foreach}
-        {else}
-            <p>No similar articles.</p>
-        {/if}
-    </section>
+                <p>
+                    Views: {$post.views_count}
+                </p>
+            </article>
+        {/foreach}
+    {else}
+        <p>No articles yet.</p>
+    {/if}
 
     {if $data['totalPages'] > 1}
         <nav>

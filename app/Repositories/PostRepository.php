@@ -129,4 +129,49 @@ class PostRepository
 
         $stmt->execute([$id]);
     }
+
+    public function count(): int
+    {
+        return (int) Database::getConnection()
+            ->query('SELECT COUNT(*) FROM posts')
+            ->fetchColumn();
+    }
+
+    public function getPaginated(
+        string $sort = 'date',
+        string $direction = 'DESC',
+        int $page = 1,
+        int $perPage = 10
+    ): array {
+        $orderBy = $sort === 'views'
+            ? 'views_count'
+            : 'created_at';
+
+        $direction = strtoupper($direction) === 'ASC'
+            ? 'ASC'
+            : 'DESC';
+
+        $total = $this->count();
+        $totalPages = (int) ceil($total / $perPage);
+
+        $page = max(1, min($page, $totalPages ?: 1));
+        $offset = ($page - 1) * $perPage;
+
+        $stmt = Database::getConnection()->prepare(
+            "SELECT *
+             FROM posts
+             ORDER BY {$orderBy} {$direction}
+             LIMIT {$perPage} OFFSET {$offset}"
+        );
+
+        $stmt->execute();
+
+        return [
+            'posts' => $stmt->fetchAll(),
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'sort' => $sort,
+            'direction' => $direction,
+        ];
+    }
 }
