@@ -1,0 +1,21 @@
+.posts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.posts-grid .post-card {
+  width: 31%;
+}
+
+@media (max-width: 800px) {
+  .posts-grid .post-card {
+    width: 48%;
+  }
+}
+
+@media (max-width: 500px) {
+  .posts-grid .post-card {
+    width: 100%;
+  }
+}

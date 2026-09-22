@@ -1,66 +1,52 @@
-```smarty
 {extends file="layout.tpl"}
 
 {block name="content"}
+    <div class="post-page">
+        {if $data.post}
+            <article class="post-view">
+                <div class="post-header">
+                    <h1 class="post-title">{$data.post->getTitle()}</h1>
+                    <div class="post-meta">
+                        <span>Опубликовано: {$data.post->getCreatedAt()}</span>
+                        <span>&bull;</span>
+                        <span>Просмотры: {$data.post->getViewsCount()}</span>
+                    </div>
+                </div>
 
-    <article>
-        <h1>{$data['post'].title}</h1>
+                {if $data.post->getImage()}
+                    <img src="{$data.post->getImage()}" alt="{$data.post->getTitle()}" class="post-image">
+                {else}
+                    <img src="/images/default.svg" alt="{$data.post->getTitle()}" class="post-image">
+                {/if}
 
-        {if $data['post'].image}
-            <img
-                    src="{$data['post'].image}"
-                    alt="{$data['post'].title}"
-            >
-        {/if}
+                <div class="post-lead">
+                    {$data.post->getDescription()}
+                </div>
 
-        <p>{$data['post'].description}</p>
+                <div class="post-body">
+                    {$data.post->getText()}
+                </div>
 
-        <p>
-            Published: {$data['post'].created_at}
-        </p>
+                <div class="post-footer">
+                    <a href="/" class="btn btn-outline">&larr; На главную</a>
+                </div>
+            </article>
 
-        <div>
-            {$data['post'].text}
-        </div>
-
-        <p>
-            Views: {$data['post'].views_count}
-        </p>
-    </article>
-
-    <section>
-        <h2>Similar articles</h2>
-
-        {if $data['similarPosts']}
-            {foreach $data['similarPosts'] as $post}
-                <article>
-                    <h3>
-                        <a href="/post/{$post.id}">
-                            {$post.title}
-                        </a>
-                    </h3>
-
-                    <p>{$post.description}</p>
-
-                    <span>
-                        Published: {$post.created_at}
-                    </span>
-
-                    <span>Views: {$post.views_count}</span>
-                </article>
-            {/foreach}
+            {if $data.similarPosts}
+                <section class="similar-posts">
+                    <h2>Похожие статьи</h2>
+                    <div class="posts-grid">
+                        {foreach $data.similarPosts as $post}
+                            {include file="partials/post_card.tpl" post=$post}
+                        {/foreach}
+                    </div>
+                </section>
+            {/if}
         {else}
-            <p>No similar articles.</p>
+            <p>Статья не найдена.</p>
+            <div style="margin-top: 20px;">
+                <a href="/" class="btn btn-outline">&larr; На главную</a>
+            </div>
         {/if}
-    </section>
-
-    <p>
-        <a href="/posts">All articles</a>
-    </p>
-
-    <p>
-        <a href="/">Home</a>
-    </p>
-
+    </div>
 {/block}
-```

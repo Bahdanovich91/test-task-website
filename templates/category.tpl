@@ -1,56 +1,46 @@
 {extends file="layout.tpl"}
 
 {block name="content"}
-
-    <h1>{$data['category']->name}</h1>
-
-    <p>{$data['category']->description}</p>
-
-    <p>
-        Sort:
-        <a href="/category/{$data['category']->id}?sort=date&direction=DESC">
-            By date
-        </a>
-
-        <a href="/category/{$data['category']->id}?sort=views&direction=DESC">
-            By views
-        </a>
-    </p>
-
-    {if $data['posts']}
-        {foreach $data['posts'] as $post}
-            <article>
-                <h2>{$post.title}</h2>
-                <p>{$post.description}</p>
-                <span>Views: {$post.views_count}</span>
-            </article>
-        {/foreach}
-    {else}
-        <p>No articles yet.</p>
-    {/if}
-
-    {if $data['totalPages'] > 1}
-        <nav>
-            {if $data['currentPage'] > 1}
-                <a href="/category/{$data['category']->id}?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] - 1}">
-                    Previous
-                </a>
+    <div class="category-page">
+        <div class="category-page-header">
+            <h1>{$data.category->getName()}</h1>
+            {if $data.category->getDescription()}
+                <p>{$data.category->getDescription()}</p>
             {/if}
+        </div>
 
-            <span>
-            Page {$data['currentPage']} of {$data['totalPages']}
-        </span>
-
-            {if $data['currentPage'] < $data['totalPages']}
-                <a href="/category/{$data['category']->id}?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] + 1}">
-                    Next
+        <div class="sort-toolbar">
+            <span class="sort-label">Сортировка:</span>
+            <div class="sort-links">
+                <a href="/category/{$data.category->getId()}?sort=date&direction=DESC"
+                   class="sort-btn {if $data.sort == 'date'}active{/if}">
+                    По дате
                 </a>
-            {/if}
-        </nav>
-    {/if}
+                <a href="/category/{$data.category->getId()}?sort=views&direction=DESC"
+                   class="sort-btn {if $data.sort == 'views'}active{/if}">
+                    По просмотрам
+                </a>
+            </div>
+        </div>
 
-    <p>
-        <a href="/">All categories</a>
-    </p>
+        {if $data.posts}
+            <div class="posts-grid">
+                {foreach $data.posts as $post}
+                    {include file="partials/post_card.tpl" post=$post}
+                {/foreach}
+            </div>
 
+            {include file="partials/pagination.tpl"
+            totalPages=$data.totalPages
+            currentPage=$data.currentPage
+            sort=$data.sort
+            direction=$data.direction}
+        {else}
+            <p>В данной категории пока нет статей.</p>
+        {/if}
+
+        <div style="margin-top: 28px;">
+            <a href="/" class="btn btn-outline">&larr; На главную</a>
+        </div>
+    </div>
 {/block}

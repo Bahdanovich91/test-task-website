@@ -5,24 +5,32 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Core\Database\Database;
+use App\Models\Post;
+use PDO;
 
 class PostRepository
 {
+    private function db(): PDO
+    {
+        return Database::getConnection();
+    }
+
     public function getLatestByCategory(int $categoryId, int $limit): array
     {
-        $stmt = Database::getConnection()->prepare(
+        $stmt = $this->db()->prepare(
             'SELECT posts.*
-         FROM posts
-         INNER JOIN post_category AS pc
-             ON pc.post_id = posts.id
-         WHERE pc.category_id = ?
-         ORDER BY posts.created_at DESC
-         LIMIT ' . $limit
+             FROM posts
+             INNER JOIN post_category AS pc ON pc.post_id = posts.id
+             WHERE pc.category_id = ?
+             ORDER BY posts.created_at DESC
+             LIMIT ?'
         );
 
-        $stmt->execute([$categoryId]);
+        $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $limit, PDO::PARAM_INT);
+        $stmt->execute();
 
-        return $stmt->fetchAll();
+        return $this->mapToModels($stmt->fetchAll());
     }
 
     public function getPaginatedByCategory(
@@ -32,34 +40,30 @@ class PostRepository
         int    $page = 1,
         int    $perPage = 5
     ): array {
-        $orderBy = $sort === 'views'
-            ? 'views_count'
-            : 'created_at';
-
-        $direction = strtoupper($direction) === 'ASC'
-            ? 'ASC'
-            : 'DESC';
+        $orderBy = $sort === 'views' ? 'views_count' : 'created_at';
+        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
 
         $total = $this->countByCategory($categoryId);
-        $totalPages = (int)ceil($total / $perPage);
+        $totalPages = (int) ceil($total / $perPage);
 
         $page = max(1, min($page, $totalPages ?: 1));
         $offset = ($page - 1) * $perPage;
 
-        $stmt = Database::getConnection()->prepare(
-            "SELECT posts.*
-         FROM posts
-         INNER JOIN post_category
-             ON post_category.post_id = posts.id
-         WHERE post_category.category_id = ?
-         ORDER BY {$orderBy} {$direction}
-         LIMIT {$perPage} OFFSET {$offset}"
-        );
+        $sql = "SELECT posts.*
+                FROM posts
+                INNER JOIN post_category ON post_category.post_id = posts.id
+                WHERE post_category.category_id = ?
+                ORDER BY {$orderBy} {$direction}
+                LIMIT ? OFFSET ?";
 
-        $stmt->execute([$categoryId]);
+        $stmt = $this->db()->prepare($sql);
+        $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(3, $offset, PDO::PARAM_INT);
+        $stmt->execute();
 
         return [
-            'posts' => $stmt->fetchAll(),
+            'posts' => $this->mapToModels($stmt->fetchAll()),
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'sort' => $sort,
@@ -69,69 +73,64 @@ class PostRepository
 
     public function countByCategory(int $categoryId): int
     {
-        $stmt = Database::getConnection()->prepare(
-            'SELECT COUNT(*)
-         FROM post_category
-         WHERE category_id = ?'
+        $stmt = $this->db()->prepare(
+            'SELECT COUNT(*) FROM post_category WHERE category_id = ?'
         );
 
-        $stmt->execute([$categoryId]);
+        $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);
+        $stmt->execute();
 
-        return (int)$stmt->fetchColumn();
+        return (int) $stmt->fetchColumn();
     }
 
-    public function find(int $id): ?array
+    public function find(int $id): ?Post
     {
-        $stmt = Database::getConnection()->prepare(
-            'SELECT *
-         FROM posts
-         WHERE id = ?
-         LIMIT 1'
+        $stmt = $this->db()->prepare(
+            'SELECT * FROM posts WHERE id = ? LIMIT 1'
         );
 
-        $stmt->execute([$id]);
+        $stmt->bindValue(1, $id, PDO::PARAM_INT);
+        $stmt->execute();
 
-        $post = $stmt->fetch();
+        $row = $stmt->fetch();
 
-        return $post ?: null;
+        return $row ? new Post($row) : null;
     }
 
     public function findSimilar(int $postId): array
     {
-        $stmt = Database::getConnection()->prepare(
+        $stmt = $this->db()->prepare(
             'SELECT DISTINCT posts.*
-         FROM posts
-         INNER JOIN post_category
-             ON post_category.post_id = posts.id
-         WHERE post_category.category_id IN (
-             SELECT category_id
-             FROM post_category
-             WHERE post_id = ?
-         )
-         AND posts.id != ?
-         ORDER BY posts.created_at DESC
-         LIMIT 3'
+             FROM posts
+             INNER JOIN post_category ON post_category.post_id = posts.id
+             WHERE post_category.category_id IN (
+                 SELECT category_id FROM post_category WHERE post_id = ?
+             )
+             AND posts.id != ?
+             ORDER BY posts.created_at DESC
+             LIMIT 3'
         );
 
-        $stmt->execute([$postId, $postId]);
+        $stmt->bindValue(1, $postId, PDO::PARAM_INT);
+        $stmt->bindValue(2, $postId, PDO::PARAM_INT);
+        $stmt->execute();
 
-        return $stmt->fetchAll();
+        return $this->mapToModels($stmt->fetchAll());
     }
 
     public function incrementViews(int $id): void
     {
-        $stmt = Database::getConnection()->prepare(
-            'UPDATE posts
-         SET views_count = views_count + 1
-         WHERE id = ?'
+        $stmt = $this->db()->prepare(
+            'UPDATE posts SET views_count = views_count + 1 WHERE id = ?'
         );
 
-        $stmt->execute([$id]);
+        $stmt->bindValue(1, $id, PDO::PARAM_INT);
+        $stmt->execute();
     }
 
     public function count(): int
     {
-        return (int) Database::getConnection()
+        return (int) $this->db()
             ->query('SELECT COUNT(*) FROM posts')
             ->fetchColumn();
     }
@@ -142,13 +141,8 @@ class PostRepository
         int $page = 1,
         int $perPage = 10
     ): array {
-        $orderBy = $sort === 'views'
-            ? 'views_count'
-            : 'created_at';
-
-        $direction = strtoupper($direction) === 'ASC'
-            ? 'ASC'
-            : 'DESC';
+        $orderBy = $sort === 'views' ? 'views_count' : 'created_at';
+        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
 
         $total = $this->count();
         $totalPages = (int) ceil($total / $perPage);
@@ -156,21 +150,29 @@ class PostRepository
         $page = max(1, min($page, $totalPages ?: 1));
         $offset = ($page - 1) * $perPage;
 
-        $stmt = Database::getConnection()->prepare(
-            "SELECT *
-             FROM posts
-             ORDER BY {$orderBy} {$direction}
-             LIMIT {$perPage} OFFSET {$offset}"
-        );
+        $sql = "SELECT * FROM posts
+                ORDER BY {$orderBy} {$direction}
+                LIMIT ? OFFSET ?";
 
+        $stmt = $this->db()->prepare($sql);
+        $stmt->bindValue(1, $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(2, $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         return [
-            'posts' => $stmt->fetchAll(),
+            'posts' => $this->mapToModels($stmt->fetchAll()),
             'currentPage' => $page,
             'totalPages' => $totalPages,
             'sort' => $sort,
             'direction' => $direction,
         ];
+    }
+
+    private function mapToModels(array $rows): array
+    {
+        return array_map(
+            static fn (array $row): Post => new Post($row),
+            $rows
+        );
     }
 }

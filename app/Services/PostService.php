@@ -22,8 +22,6 @@ readonly class PostService
 
         $this->postRepository->incrementViews($id);
 
-        $post['views_count']++;
-
         return [
             'post' => $post,
             'similarPosts' => $this->postRepository->findSimilar($id),

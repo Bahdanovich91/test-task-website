@@ -1,67 +1,43 @@
 {extends file="layout.tpl"}
 
 {block name="content"}
+    <div class="posts-page">
+        <div class="category-page-header">
+            <h1>Все статьи</h1>
+        </div>
 
-    <h1>All articles</h1>
-
-    <p>
-        <a href="/posts?sort=date&direction=DESC">
-            By date
-        </a>
-
-        <a href="/posts?sort=views&direction=DESC">
-            By views
-        </a>
-    </p>
-
-    {if $data['posts']}
-        {foreach $data['posts'] as $post}
-            <article>
-                <h2>
-                    <a href="/post/{$post.id}">
-                        {$post.title}
-                    </a>
-                </h2>
-
-                <p>
-                    {$post.description}
-                </p>
-
-                <p>
-                    Published: {$post.created_at}
-                </p>
-
-                <p>
-                    Views: {$post.views_count}
-                </p>
-            </article>
-        {/foreach}
-    {else}
-        <p>No articles yet.</p>
-    {/if}
-
-    {if $data['totalPages'] > 1}
-        <nav>
-            {if $data['currentPage'] > 1}
-                <a href="/posts?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] - 1}">
-                    Previous
+        <div class="sort-toolbar">
+            <span class="sort-label">Сортировка:</span>
+            <div class="sort-links">
+                <a href="/posts?sort=date&direction=DESC"
+                   class="sort-btn {if $data.sort == 'date'}active{/if}">
+                    По дате
                 </a>
-            {/if}
-
-            <span>
-            Page {$data['currentPage']} of {$data['totalPages']}
-        </span>
-
-            {if $data['currentPage'] < $data['totalPages']}
-                <a href="/posts?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] + 1}">
-                    Next
+                <a href="/posts?sort=views&direction=DESC"
+                   class="sort-btn {if $data.sort == 'views'}active{/if}">
+                    По просмотрам
                 </a>
-            {/if}
-        </nav>
-    {/if}
+            </div>
+        </div>
 
-    <p>
-        <a href="/">Home</a>
-    </p>
+        {if $data.posts}
+            <div class="posts-grid">
+                {foreach $data.posts as $post}
+                    {include file="partials/post_card.tpl" post=$post}
+                {/foreach}
+            </div>
 
+            {include file="partials/pagination.tpl"
+            totalPages=$data.totalPages
+            currentPage=$data.currentPage
+            sort=$data.sort
+            direction=$data.direction}
+        {else}
+            <p>Статей пока нет.</p>
+        {/if}
+
+        <div style="margin-top: 28px;">
+            <a href="/" class="btn btn-outline">&larr; На главную</a>
+        </div>
+    </div>
 {/block}

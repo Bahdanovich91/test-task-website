@@ -49,4 +49,17 @@ abstract class Model
     {
         return $this->attributes[$name] ?? null;
     }
+
+    public function __call(string $name, array $arguments): mixed
+    {
+        if (!str_starts_with($name, 'get')) {
+            return null;
+        }
+
+        $property = strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '_$0', substr($name, 3))
+        );
+
+        return $this->attributes[$property] ?? null;
+    }
 }

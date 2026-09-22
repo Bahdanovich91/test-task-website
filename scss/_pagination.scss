@@ -1,0 +1,35 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 25px 0 10px;
+}
+
+.pagination-link,
+.pagination__link,
+.pagination-info,
+.pagination__info {
+  padding: 6px 12px;
+  font-size: 14px;
+  border-radius: 4px;
+}
+
+.pagination-link,
+.pagination__link {
+  background: #ffffff;
+  border: 1px solid $color-border;
+  color: $color-primary;
+  text-decoration: none;
+}
+
+.pagination-link:hover,
+.pagination__link:hover {
+  background: #f9fafb;
+  border-color: $color-primary;
+}
+
+.pagination-info,
+.pagination__info {
+  color: #666666;
+}
