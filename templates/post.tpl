@@ -1,20 +1,32 @@
+```smarty
 {extends file="layout.tpl"}
 
 {block name="content"}
 
-    <h1>All articles</h1>
+    <article>
+        <h1>{$data['post'].title}</h1>
 
-    <p>
-        Sort:
+        {if $data['post'].image}
+            <img
+                    src="{$data['post'].image}"
+                    alt="{$data['post'].title}"
+            >
+        {/if}
 
-        <a href="/posts?sort=date&direction=DESC">
-            By date
-        </a>
+        <p>{$data['post'].description}</p>
 
-        <a href="/posts?sort=views&direction=DESC">
-            By views
-        </a>
-    </p>
+        <p>
+            Published: {$data['post'].created_at}
+        </p>
+
+        <div>
+            {$data['post'].text}
+        </div>
+
+        <p>
+            Views: {$data['post'].views_count}
+        </p>
+    </article>
 
     <section>
         <h2>Similar articles</h2>
@@ -42,28 +54,13 @@
         {/if}
     </section>
 
-    {if $data['totalPages'] > 1}
-        <nav>
-            {if $data['currentPage'] > 1}
-                <a href="/posts?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] - 1}">
-                    Previous
-                </a>
-            {/if}
-
-            <span>
-            Page {$data['currentPage']} of {$data['totalPages']}
-        </span>
-
-            {if $data['currentPage'] < $data['totalPages']}
-                <a href="/posts?sort={$data['sort']}&direction={$data['direction']}&page={$data['currentPage'] + 1}">
-                    Next
-                </a>
-            {/if}
-        </nav>
-    {/if}
+    <p>
+        <a href="/posts">All articles</a>
+    </p>
 
     <p>
         <a href="/">Home</a>
     </p>
 
 {/block}
+```
