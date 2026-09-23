@@ -18,10 +18,10 @@ class CategoryRepository
     {
         $stmt = Database::getConnection()->query(
             'SELECT DISTINCT categories.*
-         FROM categories
-         INNER JOIN post_category
-             ON post_category.category_id = categories.id
-         ORDER BY categories.name'
+             FROM categories
+             INNER JOIN post_category
+                 ON post_category.category_id = categories.id
+             ORDER BY categories.name'
         );
 
         $rows = $stmt->fetchAll();

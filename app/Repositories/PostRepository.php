@@ -17,22 +17,32 @@ class PostRepository
         return Database::getConnection();
     }
 
-    public function getLatestByCategory(int $categoryId, int $limit): array
+    public function getLatestForCategories(): array
     {
-        $stmt = $this->db()->prepare(
-            'SELECT posts.*
-             FROM posts
-             INNER JOIN post_category AS pc ON pc.post_id = posts.id
-             WHERE pc.category_id = ?
-             ORDER BY posts.created_at DESC
-             LIMIT ?'
+        $stmt = $this->db()->query(
+            'SELECT *
+             FROM (
+                 SELECT
+                     c.id AS category_id,
+                     p.*,
+                     ROW_NUMBER() OVER (
+                         PARTITION BY c.id
+                         ORDER BY p.created_at DESC, p.id DESC
+                     ) AS rn
+                 FROM categories c
+                 INNER JOIN post_category pc ON pc.category_id = c.id
+                 INNER JOIN posts p ON p.id = pc.post_id
+             ) AS ranked
+             WHERE rn <= 3'
         );
 
-        $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);
-        $stmt->bindValue(2, $limit, PDO::PARAM_INT);
-        $stmt->execute();
+        $result = [];
 
-        return $this->mapToModels($stmt->fetchAll());
+        foreach ($stmt->fetchAll() as $row) {
+            $result[$row['category_id']][] = new Post($row);
+        }
+
+        return $result;
     }
 
     public function getPaginatedByCategory(int $categoryId, PostQueryDto $query): array

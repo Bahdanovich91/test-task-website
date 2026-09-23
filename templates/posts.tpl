@@ -19,7 +19,6 @@
                     </a>
                 {/foreach}
             </div>
-        </div>v>
         </div>
 
         {if $data.posts}
