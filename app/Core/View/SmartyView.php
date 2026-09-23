@@ -14,5 +14,7 @@ final class SmartyView extends Smarty
 
         $this->setTemplateDir(__DIR__ . '/../../../templates');
         $this->setCompileDir('/tmp/smarty');
+
+        $this->setEscapeHtml(true);
     }
 }
