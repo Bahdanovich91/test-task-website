@@ -97,19 +97,20 @@ class PostRepository
     public function findSimilar(int $postId): array
     {
         $stmt = $this->db()->prepare(
-            'SELECT DISTINCT posts.*
+            'SELECT posts.*
              FROM posts
-             INNER JOIN post_category ON post_category.post_id = posts.id
-             WHERE post_category.category_id IN (
-                 SELECT category_id FROM post_category WHERE post_id = ?
-             )
-             AND posts.id != ?
-             ORDER BY posts.created_at DESC
+             INNER JOIN post_category AS pc
+                 ON pc.post_id = posts.id
+             INNER JOIN post_category AS target_pc
+                 ON target_pc.category_id = pc.category_id
+                AND target_pc.post_id = :post_id
+             WHERE posts.id != :post_id
+             GROUP BY posts.id
+             ORDER BY COUNT(pc.category_id) DESC, posts.created_at DESC
              LIMIT 3'
         );
 
-        $stmt->bindValue(1, $postId, PDO::PARAM_INT);
-        $stmt->bindValue(2, $postId, PDO::PARAM_INT);
+        $stmt->bindValue(':post_id', $postId, PDO::PARAM_INT);
         $stmt->execute();
 
         return $this->mapToModels($stmt->fetchAll());
