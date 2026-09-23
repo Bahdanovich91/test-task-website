@@ -24,6 +24,7 @@ readonly class PostService
 
         return [
             'post' => $post,
+            'categories' => $this->postRepository->getCategoriesByPost($id),
             'similarPosts' => $this->postRepository->findSimilar($id),
         ];
     }

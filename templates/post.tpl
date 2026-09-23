@@ -10,6 +10,15 @@
                         <span>Опубликовано: {$data.post->getCreatedAt()}</span>
                         <span>&bull;</span>
                         <span>Просмотры: {$data.post->getViewsCount()}</span>
+                        {if $data.categories}
+                            <span>&bull;</span>
+                            <span class="post-categories">
+                Категории:
+                {foreach $data.categories as $category}
+                    <a href="/category/{$category->getId()}">{$category->getName()}</a>{if !$category@last}, {/if}
+                {/foreach}
+            </span>
+                        {/if}
                     </div>
                 </div>
 

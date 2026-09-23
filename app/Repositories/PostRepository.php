@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Core\Database\Database;
+use App\Models\Category;
 use App\Models\Post;
 use PDO;
 
@@ -173,6 +174,25 @@ class PostRepository
         return array_map(
             static fn (array $row): Post => new Post($row),
             $rows
+        );
+    }
+
+    public function getCategoriesByPost(int $postId): array
+    {
+        $stmt = $this->db()->prepare(
+            'SELECT categories.*
+         FROM categories
+         INNER JOIN post_category AS pc ON pc.category_id = categories.id
+         WHERE pc.post_id = ?
+         ORDER BY categories.name'
+        );
+
+        $stmt->bindValue(1, $postId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return array_map(
+            static fn (array $row): Category => new Category($row),
+            $stmt->fetchAll()
         );
     }
 }

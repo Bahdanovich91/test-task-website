@@ -58,6 +58,17 @@
   margin-bottom: 15px;
 }
 
+.post-categories {
+  a {
+    color: $color-primary;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
 .post-footer,
 .post-view__footer {
   margin-top: 20px;
