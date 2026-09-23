@@ -25,8 +25,7 @@ readonly class CategoryController
         $data = $this->categoryService->getCategoryPageData($id, $query);
 
         if (!$data) {
-            http_response_code(404);
-            echo 'Category not found';
+            $this->view->notFound();
 
             return;
         }

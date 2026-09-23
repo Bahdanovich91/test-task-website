@@ -35,8 +35,7 @@ readonly class PostController
     {
         $data = $this->postService->getPostPageData($id);
         if (!$data) {
-            http_response_code(404);
-            echo 'Post not found';
+            $this->view->notFound();
 
             return;
         }

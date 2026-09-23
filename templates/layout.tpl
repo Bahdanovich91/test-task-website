@@ -12,11 +12,7 @@
 
 <main class="site-main">
     <div class="container">
-        {block name="content"}
-            {if isset($content)}
-                {include file=$content}
-            {/if}
-        {/block}
+        {block name="content"}{/block}
     </div>
 </main>
 
