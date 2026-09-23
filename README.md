@@ -2,7 +2,9 @@
 
 ```bash
 cp .env.example .env
+# Заполнить .env своими значениями
 docker compose up -d --build
+docker compose exec php composer install
 docker compose exec php php database/seed.php
 ```
 

@@ -9,11 +9,6 @@ use App\Models\Category;
 
 class CategoryRepository
 {
-    public function getAll(): array
-    {
-        return Category::all();
-    }
-
     public function find(int $id): ?Category
     {
         return Category::find($id);

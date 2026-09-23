@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Routing;
 
 use App\Core\Container\Container;
+use App\Core\View\SmartyView;
 use ReflectionClass;
 
 final class Router
@@ -53,8 +54,6 @@ final class Router
                 continue;
             }
 
-            $controller = $this->container->get($route['controller']);
-
             array_shift($matches);
 
             $matches = array_map(
@@ -63,12 +62,22 @@ final class Router
                 $matches
             );
 
-            $controller->{$route['action']}(...$matches);
+            $controller = $this->container->get($route['controller']);
+
+            try {
+                $controller->{$route['action']}(...$matches);
+            } catch (\TypeError) {
+                $this->notFound();
+            }
 
             return;
         }
 
-        http_response_code(404);
-        echo '404 Not Found';
+        $this->notFound();
+    }
+
+    private function notFound(): void
+    {
+        $this->container->get(SmartyView::class)->notFound();
     }
 }
