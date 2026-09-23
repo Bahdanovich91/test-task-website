@@ -1,0 +1,42 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.site-header {
+  background: #ffffff;
+  border-bottom: 1px solid $color-border;
+  padding: 15px 0;
+}
+
+.header-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-logo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #111111;
+  text-decoration: none;
+}
+
+.site-logo:hover {
+  color: $color-primary;
+}
+
+.site-main {
+  flex: 1;
+  padding: 25px 0 40px;
+}
+
+.site-footer {
+  background: #ffffff;
+  border-top: 1px solid $color-border;
+  padding: 15px 0;
+  text-align: center;
+  color: #777777;
+  font-size: 13px;
+}

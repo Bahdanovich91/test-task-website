@@ -40,7 +40,7 @@ abstract class Model
             ->fetchAll();
 
         return array_map(
-            fn(array $row): static => new static($row),
+            fn (array $row): static => new static($row),
             $rows
         );
     }
@@ -48,5 +48,10 @@ abstract class Model
     public function __get(string $name): mixed
     {
         return $this->attributes[$name] ?? null;
+    }
+
+    protected function attr(string $key): mixed
+    {
+        return $this->attributes[$key] ?? null;
     }
 }

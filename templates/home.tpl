@@ -1,53 +1,36 @@
 {extends file="layout.tpl"}
 
 {block name="content"}
+    <div class="home-page">
+        {foreach $categories as $item}
+            <section class="category-block">
+                <div class="category-header">
+                    <h2 class="category-title">
+                        <a href="/category/{$item.category->getId()}">{$item.category->getName()}</a>
+                    </h2>
+                    {if $item.category->getDescription()}
+                        <p class="category-desc">{$item.category->getDescription()}</p>
+                    {/if}
+                </div>
 
-    <h1>Blog</h1>
+                {if $item.posts}
+                    <div class="posts-grid">
+                        {foreach $item.posts as $post}
+                            {include file="partials/post_card.tpl" post=$post}
+                        {/foreach}
+                    </div>
+                {else}
+                    <p>В этой категории пока нет статей.</p>
+                {/if}
 
-    <p>
-        <a href="/posts">
-            All articles
-        </a>
-    </p>
-
-    {foreach $categories as $item}
-        <section>
-            <h2>
-                {$item['category']->name}
-            </h2>
-
-            <p>
-                {$item['category']->description}
-            </p>
-
-            {if $item['posts']}
-                {foreach $item['posts'] as $post}
-                    <article>
-                        <h3>
-                            <a href="/post/{$post.id}">
-                                {$post.title}
-                            </a>
-                        </h3>
-
-                        <p>
-                            {$post.description}
-                        </p>
-
-                        <span>
-                        Views: {$post.views_count}
-                    </span>
-                    </article>
-                {/foreach}
-            {else}
-                <p>No articles yet.</p>
-            {/if}
-
-            <p>
-                <a href="/category/{$item['category']->id}">
-                    All articles in this category
-                </a>
-            </p>
-        </section>
-    {/foreach}
-
+                <div class="category-footer">
+                    <a href="/category/{$item.category->getId()}" class="btn btn-outline">
+                        Все статьи &rarr;
+                    </a>
+                </div>
+            </section>
+            {foreachelse}
+            <p>Категории не найдены.</p>
+        {/foreach}
+    </div>
 {/block}

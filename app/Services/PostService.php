@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Dto\PostQueryDto;
 use App\Repositories\PostRepository;
 
 readonly class PostService
@@ -22,23 +23,15 @@ readonly class PostService
 
         $this->postRepository->incrementViews($id);
 
-        $post['views_count']++;
-
         return [
             'post' => $post,
+            'categories' => $this->postRepository->getCategoriesByPost($id),
             'similarPosts' => $this->postRepository->findSimilar($id),
         ];
     }
 
-    public function getPostsPageData(
-        string $sort,
-        string $direction,
-        int $page
-    ): array {
-        return $this->postRepository->getPaginated(
-            $sort,
-            $direction,
-            $page
-        );
+    public function getPostsPageData(PostQueryDto $query): array
+    {
+        return $this->postRepository->getPaginated($query);
     }
 }

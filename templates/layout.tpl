@@ -3,12 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>{$title|default:'Site'}</title>
+    <title>{block name="title"}{$title|default:'Блог'}{/block}</title>
+    <link rel="stylesheet" href="/css/style.css">
+    {block name="head"}{/block}
 </head>
 <body>
+{include file="partials/header.tpl"}
 
-{block name="content"}{/block}
+<main class="site-main">
+    <div class="container">
+        {block name="content"}{/block}
+    </div>
+</main>
 
+{include file="partials/footer.tpl"}
 </body>
 </html>

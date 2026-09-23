@@ -9,11 +9,6 @@ use App\Models\Category;
 
 class CategoryRepository
 {
-    public function getAll(): array
-    {
-        return Category::all();
-    }
-
     public function find(int $id): ?Category
     {
         return Category::find($id);
@@ -32,7 +27,7 @@ class CategoryRepository
         $rows = $stmt->fetchAll();
 
         return array_map(
-            fn(array $row): Category => new Category($row),
+            fn (array $row): Category => new Category($row),
             $rows
         );
     }
