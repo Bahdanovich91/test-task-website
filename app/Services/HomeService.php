@@ -17,15 +17,14 @@ readonly class HomeService
 
     public function getCategoriesWithPosts(): array
     {
-        $result = [];
+        $categories = $this->categoryRepository->getWithPosts();
+        $posts = $this->postRepository->getLatestForCategories();
 
-        foreach ($this->categoryRepository->getWithPosts() as $category) {
+        $result = [];
+        foreach ($categories as $category) {
             $result[] = [
                 'category' => $category,
-                'posts' => $this->postRepository->getLatestByCategory(
-                    $category->id,
-                    3
-                ),
+                'posts' => $posts[$category->id] ?? [],
             ];
         }
 
