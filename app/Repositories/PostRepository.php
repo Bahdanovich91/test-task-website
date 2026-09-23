@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Core\Database\Database;
+use App\Dto\PostQueryDto;
 use App\Models\Category;
 use App\Models\Post;
 use PDO;
@@ -34,21 +35,16 @@ class PostRepository
         return $this->mapToModels($stmt->fetchAll());
     }
 
-    public function getPaginatedByCategory(
-        int    $categoryId,
-        string $sort = 'date',
-        string $direction = 'DESC',
-        int    $page = 1,
-        int    $perPage = 5
-    ): array {
-        $orderBy = $sort === 'views' ? 'views_count' : 'created_at';
-        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+    public function getPaginatedByCategory(int $categoryId, PostQueryDto $query): array
+    {
+        $orderBy = $query->sort->column();
+        $direction = $query->direction->value;
 
         $total = $this->countByCategory($categoryId);
-        $totalPages = (int) ceil($total / $perPage);
+        $totalPages = (int) ceil($total / $query->perPage);
 
-        $page = max(1, min($page, $totalPages ?: 1));
-        $offset = ($page - 1) * $perPage;
+        $page = max(1, min($query->page, $totalPages ?: 1));
+        $offset = ($page - 1) * $query->perPage;
 
         $sql = "SELECT posts.*
                 FROM posts
@@ -59,7 +55,7 @@ class PostRepository
 
         $stmt = $this->db()->prepare($sql);
         $stmt->bindValue(1, $categoryId, PDO::PARAM_INT);
-        $stmt->bindValue(2, $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(2, $query->perPage, PDO::PARAM_INT);
         $stmt->bindValue(3, $offset, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -67,8 +63,8 @@ class PostRepository
             'posts' => $this->mapToModels($stmt->fetchAll()),
             'currentPage' => $page,
             'totalPages' => $totalPages,
-            'sort' => $sort,
-            'direction' => $direction,
+            'sort' => $query->sort->value,
+            'direction' => $query->direction->value,
         ];
     }
 
@@ -136,27 +132,23 @@ class PostRepository
             ->fetchColumn();
     }
 
-    public function getPaginated(
-        string $sort = 'date',
-        string $direction = 'DESC',
-        int $page = 1,
-        int $perPage = 10
-    ): array {
-        $orderBy = $sort === 'views' ? 'views_count' : 'created_at';
-        $direction = strtoupper($direction) === 'ASC' ? 'ASC' : 'DESC';
+    public function getPaginated(PostQueryDto $query): array
+    {
+        $orderBy = $query->sort->column();
+        $direction = $query->direction->value;
 
         $total = $this->count();
-        $totalPages = (int) ceil($total / $perPage);
+        $totalPages = (int) ceil($total / $query->perPage);
 
-        $page = max(1, min($page, $totalPages ?: 1));
-        $offset = ($page - 1) * $perPage;
+        $page = max(1, min($query->page, $totalPages ?: 1));
+        $offset = ($page - 1) * $query->perPage;
 
         $sql = "SELECT * FROM posts
                 ORDER BY {$orderBy} {$direction}
                 LIMIT ? OFFSET ?";
 
         $stmt = $this->db()->prepare($sql);
-        $stmt->bindValue(1, $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(1, $query->perPage, PDO::PARAM_INT);
         $stmt->bindValue(2, $offset, PDO::PARAM_INT);
         $stmt->execute();
 
@@ -164,8 +156,8 @@ class PostRepository
             'posts' => $this->mapToModels($stmt->fetchAll()),
             'currentPage' => $page,
             'totalPages' => $totalPages,
-            'sort' => $sort,
-            'direction' => $direction,
+            'sort' => $query->sort->value,
+            'direction' => $query->direction->value,
         ];
     }
 

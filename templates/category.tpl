@@ -12,14 +12,15 @@
         <div class="sort-toolbar">
             <span class="sort-label">Сортировка:</span>
             <div class="sort-links">
-                <a href="/category/{$data.category->getId()}?sort=date&direction=DESC"
-                   class="sort-btn {if $data.sort == 'date'}active{/if}">
-                    По дате
-                </a>
-                <a href="/category/{$data.category->getId()}?sort=views&direction=DESC"
-                   class="sort-btn {if $data.sort == 'views'}active{/if}">
-                    По просмотрам
-                </a>
+                {foreach $data.sortOptions as $option}
+                    <a href="/category/{$data.category->getId()}?sort={$option.key}&direction={$option.nextDirection}"
+                       class="sort-btn {if $option.isActive}active{/if}">
+                        {$option.label}
+                        {if $option.arrow}
+                            <span class="sort-arrow">{$option.arrow}</span>
+                        {/if}
+                    </a>
+                {/foreach}
             </div>
         </div>
 

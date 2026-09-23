@@ -9,15 +9,17 @@
         <div class="sort-toolbar">
             <span class="sort-label">Сортировка:</span>
             <div class="sort-links">
-                <a href="/posts?sort=date&direction=DESC"
-                   class="sort-btn {if $data.sort == 'date'}active{/if}">
-                    По дате
-                </a>
-                <a href="/posts?sort=views&direction=DESC"
-                   class="sort-btn {if $data.sort == 'views'}active{/if}">
-                    По просмотрам
-                </a>
+                {foreach $data.sortOptions as $option}
+                    <a href="/posts?sort={$option.key}&direction={$option.nextDirection}"
+                       class="sort-btn {if $option.isActive}active{/if}">
+                        {$option.label}
+                        {if $option.arrow}
+                            <span class="sort-arrow">{$option.arrow}</span>
+                        {/if}
+                    </a>
+                {/foreach}
             </div>
+        </div>v>
         </div>
 
         {if $data.posts}

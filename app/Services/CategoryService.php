@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Dto\PostQueryDto;
 use App\Repositories\CategoryRepository;
 use App\Repositories\PostRepository;
 
@@ -15,12 +16,8 @@ readonly class CategoryService
     ) {
     }
 
-    public function getCategoryPageData(
-        int $id,
-        string $sort,
-        string $direction,
-        int $page
-    ): ?array {
+    public function getCategoryPageData(int $id, PostQueryDto $query): ?array
+    {
         $category = $this->categoryRepository->find($id);
         if (!$category) {
             return null;
@@ -28,12 +25,7 @@ readonly class CategoryService
 
         return [
             'category' => $category,
-            ...$this->postRepository->getPaginatedByCategory(
-                $id,
-                $sort,
-                $direction,
-                $page
-            ),
+            ...$this->postRepository->getPaginatedByCategory($id, $query),
         ];
     }
 }
